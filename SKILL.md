@@ -1,6 +1,6 @@
 ---
 name: omnifocus
-description: "Manage OmniFocus tasks, projects, folders, and tags via Omni Automation. Use when the user asks to interact with OmniFocus, including: (1) Adding tasks to inbox or a project, (2) Listing or searching tasks (inbox, available, flagged, due, overdue), (3) Completing, deleting, or modifying tasks (notes, due dates, defer dates, flags, tags), (4) Managing projects and folders, (5) Setting repeat rules on tasks, (6) Getting OmniFocus statistics and summaries, (7) GTD workflows and task reviews. Requires OmniFocus 3+ installed on macOS."
+description: "Live OmniFocus access — tasks, projects, inbox, tags. Use for ANY OmniFocus query: 'show my tasks', 'what's in my inbox', 'omnifocus summary', 'what's due today', 'flagged items', 'add a task', 'complete a task', 'search omnifocus', 'show my projects', 'GTD review'. Always run a command to get live data — never answer from memory."
 ---
 
 # OmniFocus

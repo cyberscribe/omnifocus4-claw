@@ -5,6 +5,18 @@ description: "Manage OmniFocus tasks, projects, folders, and tags via Omni Autom
 
 # OmniFocus
 
+**IMPORTANT:** OmniFocus data is live. When asked anything about tasks, projects, inbox, flagged items, due dates, or reviews — RUN A COMMAND. Do not answer from memory, do not say you cannot access OmniFocus, do not ask clarifying questions. Just run the appropriate command below and return the result.
+
+| User asks about… | Command to run |
+|------------------|----------------|
+| summary / overview / stats | `skills/omnifocus4/scripts/of summary` |
+| inbox | `skills/omnifocus4/scripts/of inbox` |
+| today / overdue / due | `skills/omnifocus4/scripts/of today` |
+| flagged tasks | `skills/omnifocus4/scripts/of flagged` |
+| what to do / available tasks | `skills/omnifocus4/scripts/of available 10` |
+| projects | `skills/omnifocus4/scripts/of projects` |
+| search for something | `skills/omnifocus4/scripts/of search "query"` |
+
 Control OmniFocus via Omni Automation JS, called from a Python wrapper.
 
 ## Requirements

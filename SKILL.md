@@ -1,6 +1,6 @@
 ---
-name: omnifocus
-description: "Live OmniFocus access — tasks, projects, inbox, tags. Use for ANY OmniFocus query: 'show my tasks', 'what's in my inbox', 'omnifocus summary', 'what's due today', 'flagged items', 'add a task', 'complete a task', 'search omnifocus', 'show my projects', 'GTD review'. Always run a command to get live data — never answer from memory."
+name: omnifocus4
+description: "Live OmniFocus access via native Omni Automation — tasks, projects, inbox, tags. Use for ANY OmniFocus query: 'show my tasks', 'what's in my inbox', 'omnifocus summary', 'what's due today', 'flagged items', 'add a task', 'complete a task', 'search omnifocus', 'show my projects', 'GTD review'. Always run a command to get live data — never answer from memory."
 ---
 
 # OmniFocus
@@ -51,7 +51,7 @@ All commands return JSON to stdout. Errors print `{"error": "..."}` and exit 1.
 | `summary` | | Database counts (projects, tasks, flagged, due, available, inbox) |
 | `project-tree` | `<name> [limit]` | Recursive subtask tree with depth |
 | `project-search` | `<term> [limit]` | Find projects by partial name |
-| `folder` | `<name> [limit]` | Detail a folder: child folders + projects |
+| `folder` | `<name> [limit]` | Detail a folder: child folders + projects (default limit 50 — use a higher limit for large folders) |
 | `root` | `[limit]` | Top-level folders and unfiled projects |
 | `tag-summary` | `<name> [limit]` | Tasks for a tag, grouped by folder/project |
 | `tag-family` | `<name> [limit]` | Tasks across a tag and all its children |

@@ -9,13 +9,13 @@ description: "Live OmniFocus access — tasks, projects, inbox, tags. Use for AN
 
 | User asks about… | Command to run |
 |------------------|----------------|
-| summary / overview / stats | `skills/omnifocus4/scripts/of summary` |
-| inbox | `skills/omnifocus4/scripts/of inbox` |
-| today / overdue / due | `skills/omnifocus4/scripts/of today` |
-| flagged tasks | `skills/omnifocus4/scripts/of flagged` |
-| what to do / available tasks | `skills/omnifocus4/scripts/of available 10` |
-| projects | `skills/omnifocus4/scripts/of projects` |
-| search for something | `skills/omnifocus4/scripts/of search "query"` |
+| summary / overview / stats | `scripts/of summary` |
+| inbox | `scripts/of inbox` |
+| today / overdue / due | `scripts/of today` |
+| flagged tasks | `scripts/of flagged` |
+| what to do / available tasks | `scripts/of available 10` |
+| projects | `scripts/of projects` |
+| search for something | `scripts/of search "query"` |
 
 Control OmniFocus via Omni Automation JS, called from a Python wrapper.
 
@@ -28,7 +28,7 @@ Control OmniFocus via Omni Automation JS, called from a Python wrapper.
 ## Quick Reference
 
 ```bash
-skills/omnifocus4/scripts/of <command> [args...]
+scripts/of <command> [args...]
 ```
 
 All commands return JSON to stdout. Errors print `{"error": "..."}` and exit 1.
@@ -88,10 +88,10 @@ All commands return JSON to stdout. Errors print `{"error": "..."}` and exit 1.
 
 ```bash
 # repeat <taskId> <method> <interval> <unit>
-skills/omnifocus4/scripts/of repeat abc123 fixed 1 weeks
-skills/omnifocus4/scripts/of repeat abc123 due-after-completion 2 days
-skills/omnifocus4/scripts/of repeat abc123 defer-after-completion 1 months
-skills/omnifocus4/scripts/of unrepeat abc123
+scripts/of repeat abc123 fixed 1 weeks
+scripts/of repeat abc123 due-after-completion 2 days
+scripts/of repeat abc123 defer-after-completion 1 months
+scripts/of unrepeat abc123
 ```
 
 Methods: `fixed`, `due-after-completion`, `defer-after-completion`
@@ -127,34 +127,34 @@ Write commands return `{"success": true, "task": {...}}`.
 
 ```bash
 # Add task to inbox
-skills/omnifocus4/scripts/of add "Buy groceries"
+scripts/of add "Buy groceries"
 
 # Add task to specific project
-skills/omnifocus4/scripts/of add "Review docs" "Work Projects"
+scripts/of add "Review docs" "Work Projects"
 
 # Get today's tasks
-skills/omnifocus4/scripts/of today
+scripts/of today
 
 # Search name and notes
-skills/omnifocus4/scripts/of search "quarterly report"
+scripts/of search "quarterly report"
 
 # Set due date and flag
-skills/omnifocus4/scripts/of due abc123 2026-04-10
-skills/omnifocus4/scripts/of flag abc123 true
+scripts/of due abc123 2026-04-10
+scripts/of flag abc123 true
 
 # Add tags
-skills/omnifocus4/scripts/of tag abc123 "urgent"
+scripts/of tag abc123 "urgent"
 
 # Create recurring task
-skills/omnifocus4/scripts/of add "Weekly review" "Habits"
-skills/omnifocus4/scripts/of repeat xyz789 fixed 1 weeks
+scripts/of add "Weekly review" "Habits"
+scripts/of repeat xyz789 fixed 1 weeks
 
 # Hierarchical views
-skills/omnifocus4/scripts/of summary
-skills/omnifocus4/scripts/of root
-skills/omnifocus4/scripts/of folder "Personal"
-skills/omnifocus4/scripts/of project-tree "Work" 50
-skills/omnifocus4/scripts/of tag-family "review"
+scripts/of summary
+scripts/of root
+scripts/of folder "Personal"
+scripts/of project-tree "Work" 50
+scripts/of tag-family "review"
 ```
 
 ## Performance

@@ -16,11 +16,7 @@ Control OmniFocus via Omni Automation JS, called from a Python wrapper.
 ## Quick Reference
 
 ```bash
-# Run via the wrapper
-python3 scripts/omnifocus.py <command> [args...]
-
-# Shorthand (if of is executable)
-scripts/of <command> [args...]
+skills/omnifocus4/scripts/of <command> [args...]
 ```
 
 All commands return JSON to stdout. Errors print `{"error": "..."}` and exit 1.
@@ -33,9 +29,9 @@ All commands return JSON to stdout. Errors print `{"error": "..."}` and exit 1.
 |---------|------|-------------|
 | `inbox` | | List inbox tasks |
 | `folders` | | List all folders |
-| `projects` | `[folder]` | List projects, optionally filtered by folder |
+| `projects` | `[folder] [--all]` | List active projects (default); `--all` includes on-hold, dropped, completed |
 | `tasks` | `<project>` | List tasks in a project |
-| `tags` | | List all tags |
+| `tags` | `[--all]` | List tags with available tasks (default); `--all` includes empty tags |
 | `today` | | Tasks due today or overdue |
 | `flagged` | | Flagged incomplete tasks |
 | `search` | `<query>` | Search tasks by name or note |
@@ -48,7 +44,7 @@ All commands return JSON to stdout. Errors print `{"error": "..."}` and exit 1.
 | `tag-summary` | `<name> [limit]` | Tasks for a tag, grouped by folder/project |
 | `tag-family` | `<name> [limit]` | Tasks across a tag and all its children |
 | `available` | `[limit]` | All available (actionable) tasks |
-| `review` | `[limit]` | All projects with total + available task counts |
+| `review` | `[limit] [--all]` | Active projects with task counts (default); `--all` includes all statuses |
 
 ### Create
 
@@ -80,10 +76,10 @@ All commands return JSON to stdout. Errors print `{"error": "..."}` and exit 1.
 
 ```bash
 # repeat <taskId> <method> <interval> <unit>
-python3 scripts/omnifocus.py repeat abc123 fixed 1 weeks
-python3 scripts/omnifocus.py repeat abc123 due-after-completion 2 days
-python3 scripts/omnifocus.py repeat abc123 defer-after-completion 1 months
-python3 scripts/omnifocus.py unrepeat abc123
+skills/omnifocus4/scripts/of repeat abc123 fixed 1 weeks
+skills/omnifocus4/scripts/of repeat abc123 due-after-completion 2 days
+skills/omnifocus4/scripts/of repeat abc123 defer-after-completion 1 months
+skills/omnifocus4/scripts/of unrepeat abc123
 ```
 
 Methods: `fixed`, `due-after-completion`, `defer-after-completion`
@@ -119,35 +115,49 @@ Write commands return `{"success": true, "task": {...}}`.
 
 ```bash
 # Add task to inbox
-python3 scripts/omnifocus.py add "Buy groceries"
+skills/omnifocus4/scripts/of add "Buy groceries"
 
 # Add task to specific project
-python3 scripts/omnifocus.py add "Review docs" "Work Projects"
+skills/omnifocus4/scripts/of add "Review docs" "Work Projects"
 
 # Get today's tasks
-python3 scripts/omnifocus.py today
+skills/omnifocus4/scripts/of today
 
 # Search name and notes
-python3 scripts/omnifocus.py search "quarterly report"
+skills/omnifocus4/scripts/of search "quarterly report"
 
 # Set due date and flag
-python3 scripts/omnifocus.py due abc123 2026-04-10
-python3 scripts/omnifocus.py flag abc123 true
+skills/omnifocus4/scripts/of due abc123 2026-04-10
+skills/omnifocus4/scripts/of flag abc123 true
 
 # Add tags
-python3 scripts/omnifocus.py tag abc123 "urgent"
+skills/omnifocus4/scripts/of tag abc123 "urgent"
 
 # Create recurring task
-python3 scripts/omnifocus.py add "Weekly review" "Habits"
-python3 scripts/omnifocus.py repeat xyz789 fixed 1 weeks
+skills/omnifocus4/scripts/of add "Weekly review" "Habits"
+skills/omnifocus4/scripts/of repeat xyz789 fixed 1 weeks
 
 # Hierarchical views
-python3 scripts/omnifocus.py summary
-python3 scripts/omnifocus.py root
-python3 scripts/omnifocus.py folder "Personal"
-python3 scripts/omnifocus.py project-tree "Work" 50
-python3 scripts/omnifocus.py tag-family "review"
+skills/omnifocus4/scripts/of summary
+skills/omnifocus4/scripts/of root
+skills/omnifocus4/scripts/of folder "Personal"
+skills/omnifocus4/scripts/of project-tree "Work" 50
+skills/omnifocus4/scripts/of tag-family "review"
 ```
+
+## Performance
+
+OmniJS loads all task objects on first access (~5-7 s for large databases).
+Commands are grouped by expected latency:
+
+**Fast (<1 s):** `inbox`, `folders`, `root`, `folder`, `projects`, `project-search`,
+`project-tree`, `tags`, `tag-summary`, `tag-family`
+
+**Medium (4-6 s):** `summary`, `flagged`, `today`, `search`, `available`, `review`
+
+Prefer fast structural commands for navigation. Use medium commands only when
+task-level data is actually needed — and batch related queries when possible
+(e.g. ask for `flagged` once rather than `flagged` + `available` separately).
 
 ## Technical Details
 
@@ -162,8 +172,9 @@ Key implementation patterns:
 - `safe()` wrapper — prevents crashes on null/undefined properties
 - `id.primaryKey` — stable canonical ID in Omni Automation
 - `effectiveDueDate` — respects project-cascaded due dates
-- `task.available` — respects defer dates, sequential ordering, project status
 - Dates output as ISO 8601 YYYY-MM-DD via `Date.toISOString()`
+- `isAvailableApprox` — fast approximation: not completed + not deferred to future
+- `listTaskRecord` / `listProjectRecord` — slim records for bulk list commands
 
 **First run:** OmniFocus may prompt to allow automation access. Enable in
 System Settings > Privacy & Security > Automation.
@@ -174,4 +185,4 @@ System Settings > Privacy & Security > Automation.
 - Dates use ISO 8601: YYYY-MM-DD
 - Project and tag names are case-sensitive
 - Tags are created automatically when using `tag` command
-- `available` respects defer dates, sequential project ordering, and on-hold status
+- `isAvailableApprox` respects defer dates but not sequential project ordering

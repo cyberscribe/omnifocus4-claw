@@ -922,9 +922,23 @@ def cmd_tag_family(tag_name: str, limit: int = 2000) -> None:
 
 
 def cmd_available(limit: int = 50) -> None:
+    # Iterate per-project direct tasks with early exit across projects.
+    # flattenedTasks triggers a full database scan (~6-12 s) even for limit=5.
+    # p.tasks accesses one project at a time; we exit as soon as limit is reached.
+    # Tradeoff: misses subtasks and tasks in dropped/completed projects — acceptable
+    # for "what can I work on now" queries which are always in active projects.
     result = run_omni_js(omni_js(f"""
-      const items = earlyFilter(flattenedTasks, isAvailableApprox, {limit})
-        .map(listTaskRecord);
+      const projects = flattenedProjects;
+      const np = projects.length;
+      const items = [];
+      for (let pi = 0; pi < np && items.length < {limit}; pi++) {{
+        const pts = projects[pi].tasks;
+        const nt  = safe(() => pts.length, 0);
+        for (let ti = 0; ti < nt && items.length < {limit}; ti++) {{
+          const t = pts[ti];
+          if (t && isAvailableApprox(t)) items.push(listTaskRecord(t));
+        }}
+      }}
       return JSON.stringify({{count: items.length, items}});
     """))
     _out(result)

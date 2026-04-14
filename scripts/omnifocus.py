@@ -855,12 +855,15 @@ def cmd_root(limit: int = 50) -> None:
     _out(result)
 
 
-def cmd_tag_summary(tag_name: str, limit: int = 1000) -> None:
+def cmd_tag_summary(tag_name: str, limit: int = 200) -> None:
+    # Incomplete tasks only, slim records. Full taskRecord with notes
+    # blew past token limits for large tags (92k+ chars for "MSIA Day").
     target = json.dumps(tag_name)
     result = run_omni_js(omni_js(f"""
       const tag = findByName(flattenedTags, {target});
       if (!tag) return JSON.stringify({{found: false, name: {target}}});
-      const tasks = asArray(tag.tasks).slice(0, {limit}).map(taskRecord);
+      const all = asArray(tag.tasks).filter(t => !isCompleted(t));
+      const tasks = all.slice(0, {limit}).map(listTaskRecord);
       const byFolder  = {{}};
       const byProject = {{}};
       for (const t of tasks) {{
@@ -873,7 +876,9 @@ def cmd_tag_summary(tag_name: str, limit: int = 1000) -> None:
       return JSON.stringify({{
         found: true,
         tag:   {{id: safe(() => tag.id.primaryKey, null), name: tag.name}},
-        total: tasks.length,
+        totalIncomplete: all.length,
+        returned: tasks.length,
+        truncated: all.length > tasks.length,
         byFolder,
         byProject,
         items: tasks,
@@ -1202,7 +1207,7 @@ def dispatch(argv: list) -> None:
         elif cmd == "tag-summary":
             if not args:
                 _err("Tag name required")
-            limit = int(args[1]) if len(args) > 1 else 1000
+            limit = int(args[1]) if len(args) > 1 else 200
             cmd_tag_summary(args[0], limit)
         elif cmd == "tag-family":
             if not args:
